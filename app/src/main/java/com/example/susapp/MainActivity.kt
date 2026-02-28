@@ -72,7 +72,18 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         setupUIAndPrefs()
         setupListeners()
         checkAndRequestPermissions()
-        startPowerButtonService()
+        
+        if (intent?.getBooleanExtra("SOS_TRIGGERED", false) == true) {
+            triggerPanicMode()
+        }
+    }
+    
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.getBooleanExtra("SOS_TRIGGERED", false)) {
+            triggerPanicMode()
+        }
     }
     
     private fun startPowerButtonService() {
@@ -110,12 +121,12 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val isFirstTime = sharedPrefs.getBoolean("first_time", true)
         val savedNumbers = sharedPrefs.getString("saved_numbers", "")
 
+        sosButtonWrapper.visibility = View.VISIBLE
+
         if (isFirstTime || savedNumbers.isNullOrEmpty()) {
-            sosButtonWrapper.visibility = View.GONE
             mascotImage.setImageResource(R.drawable.sniffles)
             Toast.makeText(this, "Please enter your emergency contacts to begin", Toast.LENGTH_LONG).show()
         } else {
-            sosButtonWrapper.visibility = View.VISIBLE
             mascotImage.setImageResource(R.drawable.pleading_cat)
         }
     }
@@ -164,7 +175,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         sosButtonWrapper.setOnClickListener {
             val numbersText = sharedPrefs.getString("saved_numbers", "")
             if (numbersText.isNullOrEmpty()) {
-                Toast.makeText(this, "No emergency contacts found", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No emergency contacts found. Please add them in Settings!", Toast.LENGTH_LONG).show()
+                startActivity(Intent(this, SettingsActivity::class.java))
                 return@setOnClickListener
             }
 
@@ -243,6 +255,8 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
         if (permissionsNeeded.isNotEmpty()) {
             ActivityCompat.requestPermissions(this, permissionsNeeded.toTypedArray(), PERMISSION_REQUEST_CODE)
+        } else {
+            startPowerButtonService()
         }
     }
 
@@ -266,14 +280,23 @@ class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     private fun sendSmsToNumbers(numbers: List<String>, message: String) {
         val smsManager = SmsManager.getDefault()
+        var sentCount = 0
         for (number in numbers) {
             try {
                 smsManager.sendTextMessage(number, null, message, null, null)
+                sentCount++
             } catch (e: Exception) {
                 Toast.makeText(this, "Failed to send SMS to $number", Toast.LENGTH_SHORT).show()
             }
         }
-        Toast.makeText(this, "SOS message sent! Location included.", Toast.LENGTH_SHORT).show()
+        if (sentCount > 0) {
+            Toast.makeText(this, "SOS message successfully sent to $sentCount contacts!", Toast.LENGTH_LONG).show()
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            // Very long strong vibration to indicate success
+            vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            Toast.makeText(this, "Failed to send any SOS messages.", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

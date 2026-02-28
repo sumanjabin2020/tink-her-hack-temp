@@ -18,9 +18,13 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.Vibrator
 import android.os.VibrationEffect
-import android.speech.RecognitionListener
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
+import org.vosk.Model
+import org.vosk.Recognizer
+import org.vosk.android.RecognitionListener
+import org.vosk.android.SpeechService
+import org.vosk.android.StorageService
+import java.io.IOException
+import org.json.JSONObject
 import android.telephony.SmsManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -34,7 +38,8 @@ class EmergencyTriggerService : Service() {
     private val TAG = "EmergencyTriggerService"
     
     // Voice Listening Logic
-    private var speechRecognizer: SpeechRecognizer? = null
+    private var speechService: SpeechService? = null
+    private var voskModel: Model? = null
     private var isListening = false
     private val mainHandler = Handler(Looper.getMainLooper())
     
@@ -66,6 +71,15 @@ class EmergencyTriggerService : Service() {
                     Log.d(TAG, "SOS Triggered via Power Button!")
                     powerPressCount = 0 // Reset
                     triggerSOSInBackground()
+                    
+                    // Bring app to foreground
+                    if (context != null) {
+                        val launchIntent = Intent(context, MainActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            putExtra("SOS_TRIGGERED", true)
+                        }
+                        context.startActivity(launchIntent)
+                    }
                 }
             }
         }
@@ -90,7 +104,7 @@ class EmergencyTriggerService : Service() {
             startForeground(1, createNotification())
         }
         
-        initializeSpeechRecognizer()
+        initializeVosk()
         
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_SCREEN_ON)
@@ -108,8 +122,11 @@ class EmergencyTriggerService : Service() {
         unregisterReceiver(screenReceiver)
         
         mainHandler.post {
-            speechRecognizer?.destroy()
-            speechRecognizer = null
+            speechService?.stop()
+            speechService?.shutdown()
+            speechService = null
+            voskModel?.close()
+            voskModel = null
         }
     }
 
@@ -183,111 +200,140 @@ class EmergencyTriggerService : Service() {
         }
     }
     
-    private fun initializeSpeechRecognizer() {
-        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
-            Log.e(TAG, "Speech recognition not available")
-            return
-        }
+    private fun initializeVosk() {
+        val sharedPrefs = getSharedPreferences("SOS_PREFS", MODE_PRIVATE)
+        val isVoiceEnabled = sharedPrefs.getBoolean("voice_enabled", false)
+        if (!isVoiceEnabled) return
 
-        mainHandler.post {
-            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
-            speechRecognizer?.setRecognitionListener(object : RecognitionListener {
-                override fun onReadyForSpeech(params: Bundle?) {}
-                override fun onBeginningOfSpeech() {}
-                override fun onRmsChanged(rmsdB: Float) {}
-                override fun onBufferReceived(buffer: ByteArray?) {}
-                override fun onEndOfSpeech() {}
-                override fun onError(error: Int) {
-                    isListening = false
-                    restartListening()
-                }
-
-                override fun onResults(results: Bundle?) {
-                    val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    if (matches != null) {
-                        val sharedPrefs = getSharedPreferences("SOS_PREFS", MODE_PRIVATE)
-                        val isVoiceEnabled = sharedPrefs.getBoolean("voice_enabled", false)
-                        val secretKeyword = sharedPrefs.getString("voice_keyword", "")?.lowercase()?.trim()
-
-                        if (isVoiceEnabled && !secretKeyword.isNullOrEmpty()) {
-                            for (match in matches) {
-                                if (match.lowercase().contains(secretKeyword)) {
-                                    Log.d(TAG, "Voice keyword detected! Triggering SOS...")
-                                    triggerSOSInBackground()
-                                    break
-                                }
-                            }
-                        }
-                    }
-                    isListening = false
-                    restartListening()
-                }
-
-                override fun onPartialResults(partialResults: Bundle?) {}
-                override fun onEvent(eventType: Int, params: Bundle?) {}
-            })
-            startListening()
-        }
+        StorageService.unpack(this, "model", "model",
+            { model: Model ->
+                this.voskModel = model
+                startListening()
+            },
+            { exception: IOException -> Log.e(TAG, "Failed to unpack the model: " + exception.message) }
+        )
     }
 
     private fun startListening() {
+        if (voskModel == null) return
+
         val sharedPrefs = getSharedPreferences("SOS_PREFS", MODE_PRIVATE)
         val isVoiceEnabled = sharedPrefs.getBoolean("voice_enabled", false)
         
         if (!isVoiceEnabled) {
-            // Check again periodically if it's disabled
             mainHandler.postDelayed({ startListening() }, 5000)
             return
         }
 
-        if (!isListening && speechRecognizer != null) {
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)
-                putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+        if (speechService != null) {
+            speechService?.stop()
+            speechService?.shutdown()
+            speechService = null
+        }
+
+        val secretKeyword = sharedPrefs.getString("voice_keyword", "")?.lowercase()?.trim()
+
+        try {
+            val recognizer = Recognizer(voskModel, 16000.0f)
+            speechService = SpeechService(recognizer, 16000.0f)
+            
+            val listener = object : RecognitionListener {
+                override fun onPartialResult(hypothesis: String) {
+                    checkKeyword(hypothesis, secretKeyword)
+                }
+
+                override fun onResult(hypothesis: String) {
+                    checkKeyword(hypothesis, secretKeyword)
+                }
+
+                override fun onFinalResult(hypothesis: String) {
+                    checkKeyword(hypothesis, secretKeyword)
+                    restartListening()
+                }
+
+                override fun onError(e: Exception) {
+                    Log.e(TAG, "SpeechService error", e)
+                    restartListening()
+                }
+
+                override fun onTimeout() {
+                    restartListening()
+                }
             }
-            try {
-                // Temporarily mute system beeps so it doesn't annoy the user
-                val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                audioManager.adjustStreamVolume(AudioManager.STREAM_SYSTEM, AudioManager.ADJUST_MUTE, 0)
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0)
-                audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_MUTE, 0)
-                audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_MUTE, 0)
-                audioManager.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_MUTE, 0)
+            
+            speechService?.startListening(listener)
+            isListening = true
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to create SpeechService", e)
+            restartListening()
+        }
+    }
+
+    private fun checkKeyword(hypothesis: String?, secretKeyword: String?) {
+        if (secretKeyword.isNullOrEmpty() || hypothesis.isNullOrEmpty()) return
+        
+        try {
+            // hypothesis is a JSON string from Vosk like {"text": "something"}
+            val jsonObject = JSONObject(hypothesis)
+            if (!jsonObject.has("text")) return
+            
+            val recognizedText = jsonObject.getString("text").lowercase()
+            
+            if (recognizedText.contains(secretKeyword)) {
+                Log.d(TAG, "Voice keyword detected via Vosk! Triggering SOS...")
                 
-                speechRecognizer?.startListening(intent)
-                isListening = true
+                // Run background logic
+                triggerSOSInBackground()
                 
-                // Unmute shortly after
-                mainHandler.postDelayed({
-                    audioManager.adjustStreamVolume(AudioManager.STREAM_SYSTEM, AudioManager.ADJUST_UNMUTE, 0)
-                    audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
-                    audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_UNMUTE, 0)
-                    audioManager.adjustStreamVolume(AudioManager.STREAM_RING, AudioManager.ADJUST_UNMUTE, 0)
-                    audioManager.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_UNMUTE, 0)
-                }, 500)
-                
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to start listening", e)
+                // Stop listening immediately to prevent loops
+                speechService?.stop()
+                speechService?.shutdown()
+                speechService = null
                 isListening = false
-                restartListening()
+                
+                // Bring app to foreground - MUST be on main thread
+                mainHandler.post {
+                    val intent = Intent(this@EmergencyTriggerService, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        putExtra("SOS_TRIGGERED", true)
+                    }
+                    startActivity(intent)
+                }
+                
+                // Wait a bit before restarting listening to avoid multiple triggers
+                mainHandler.postDelayed({ startListening() }, 10000)
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing Vosk JSON: $hypothesis", e)
         }
     }
 
     private fun restartListening() {
+        isListening = false
         mainHandler.postDelayed({
             startListening()
-        }, 1500) // Increase delay slightly to reduce battery and loop aggression
+        }, 1500)
     }
     
     private fun sendSms(numbers: List<String>, message: String) {
         val smsManager = SmsManager.getDefault()
+        var sentCount = 0
         for (number in numbers) {
             try {
                 smsManager.sendTextMessage(number, null, message, null, null)
+                sentCount++
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to send SMS to $number")
+            }
+        }
+        
+        if (sentCount > 0) {
+            Log.d(TAG, "Successfully sent $sentCount SOS messages")
+            mainHandler.post {
+                android.widget.Toast.makeText(this, "Meow SOS successfully sent to contacts!", android.widget.Toast.LENGTH_LONG).show()
+                val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
             }
         }
     }
