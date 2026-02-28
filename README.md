@@ -9,8 +9,7 @@
 ### Team Name: Team Meow
 
 ### Team Members
-- Member 1: Suman Jabin - TinkerHub
-- Member 2: Antigravity AI - Google DeepMind
+- Member 1: Suman Jabin - Ahalia School Of Engineering & Technology
 
 ### Hosted Project Link
 [https://sumanjabin2020.github.io/tink-her-hack-temp/](https://sumanjabin2020.github.io/tink-her-hack-temp/)
@@ -34,7 +33,7 @@ We've built an app that disguises itself as a silly cat tool but packs powerful 
 - **Languages used:** Kotlin, XML (Android), HTML5, CSS3 (Web)
 - **Frameworks used:** Android SDK, Gradle
 - **Libraries used:** Google Play Services Location (Fused Location Provider), SpeechRecognizer API (Android Speech), TextToSpeech.
-- **Tools used:** Android Studio, Git, GitHub Pages, AI Image Generation (for our goofy mascots).
+- **Tools used:** Android Studio, Git, GitHub Pages, AI Image Generation.
 
 ---
 
