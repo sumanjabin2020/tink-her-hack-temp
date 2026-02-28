@@ -134,9 +134,10 @@ class EmergencyTriggerService : Service() {
     private fun createNotification(): Notification {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Meow SOS Active")
-            .setContentText("Monitoring power button presses for emergencies.")
+            .setContentText("Listening for power button presses and voice keywords.")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
             .build()
     }
 
