@@ -2,27 +2,27 @@
   <img src="./img.png" alt="Project Banner" width="100%">
 </p>
 
-# [Project Name] 🎯
+# Meow SOS! 🐾🎯
 
 ## Basic Details
 
-### Team Name: [Name]
+### Team Name: Team Meow
 
 ### Team Members
-- Member 1: [Name] - [College]
-- Member 2: [Name] - [College]
+- Member 1: Suman Jabin - TinkerHub
+- Member 2: Antigravity AI - Google DeepMind
 
 ### Hosted Project Link
-[mention your project hosted link here]
+[https://sumanjabin2020.github.io/tink-her-hack-temp/](https://sumanjabin2020.github.io/tink-her-hack-temp/)
 
 ### Project Description
-[2-3 lines about what your project does]
+Meow SOS is a highly functional yet delightfully goofy emergency safety app for Android. It combines critical safety features like GPS tracking and silent triggers with a playful cat theme to make personal safety accessible, discreet, and a little less intimidating.
 
 ### The Problem statement
-[What problem are you solving?]
+Personal safety apps often feel clinical, scary, or are too slow to activate in real pressure situations. Many users forget how to use them or feel uncomfortable triggering "serious" alarms in uncertain situations.
 
 ### The Solution
-[How are you solving it?]
+We've built an app that disguises itself as a silly cat tool but packs powerful background services. With multiple "panic" triggers (Power Button, Voice Commands) and "social exit" features (Fake Calls), it provides a comprehensive safety net that you'll actually *want* to keep on your home screen.
 
 ---
 
@@ -31,25 +31,21 @@
 ### Technologies/Components Used
 
 **For Software:**
-- Languages used: [e.g., JavaScript, Python, Java]
-- Frameworks used: [e.g., React, Django, Spring Boot]
-- Libraries used: [e.g., axios, pandas, JUnit]
-- Tools used: [e.g., VS Code, Git, Docker]
-
-**For Hardware:**
-- Main components: [List main components]
-- Specifications: [Technical specifications]
-- Tools required: [List tools needed]
+- **Languages used:** Kotlin, XML (Android), HTML5, CSS3 (Web)
+- **Frameworks used:** Android SDK, Gradle
+- **Libraries used:** Google Play Services Location (Fused Location Provider), SpeechRecognizer API (Android Speech), TextToSpeech.
+- **Tools used:** Android Studio, Git, GitHub Pages, AI Image Generation (for our goofy mascots).
 
 ---
 
 ## Features
 
-List the key features of your project:
-- Feature 1: [Description]
-- Feature 2: [Description]
-- Feature 3: [Description]
-- Feature 4: [Description]
+- **🐾 5-Tap Power Pulse**: Rapidly press your phone's power button 5 times to instantly (and silently) fire off an SOS message with your location.
+- **🎙️ Secret Voice Trigger**: Say your custom "Safe Word" (like *"Illuminati 101"*) and the app will trigger the SOS sequence in the background even if the screen is off.
+- **📍 Precise GPS Sharing**: Every SOS message includes a real-time Google Maps link so your contacts know exactly where to find you.
+- **🛡️ Invisible Multi-Shield**: An "Invisibility Mode" that turns your screen pitch black and hides the UI, making your phone look off while you use the app discreetly.
+- **📞 The "Mom" Escape**: A realistic Fake Call simulator (from "Mom") with full incoming and active call screens to help you politely exit uncomfortable social situations.
+- **⚙️ Secret Settings**: A hidden menu to customize your emergency contacts, your SOS message, and your secret voice keyword.
 
 ---
 
@@ -57,304 +53,40 @@ List the key features of your project:
 
 ### For Software:
 
-#### Installation
+#### Building from Source
 ```bash
-[Installation commands - e.g., npm install, pip install -r requirements.txt]
+# Clone the repository
+git clone https://github.com/sumanjabin2020/tink-her-hack-temp.git
+
+# Build the APK via Gradle
+./gradlew assembleDebug
 ```
 
 #### Run
-```bash
-[Run commands - e.g., npm start, python app.py]
-```
-
-### For Hardware:
-
-#### Components Required
-[List all components needed with specifications]
-
-#### Circuit Setup
-[Explain how to set up the circuit]
+1. Install the `app-debug.apk` on your Android device.
+2. Grant Location, SMS, and Microphone permissions.
+3. Set your custom emergency contact in the Settings menu.
+4. Try saying "Illuminati 101" or tapping the power button 5 times!
 
 ---
 
 ## Project Documentation
 
-### For Software:
+### Screenshots
 
-#### Screenshots (Add at least 3)
+![Screenshot1](https://raw.githubusercontent.com/sumanjabin2020/tink-her-hack-temp/main/github_pages_site/assets/hero_cat.png)
+*The Goofy Hero Mascot guiding you through setup!*
 
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
+![Screenshot2](https://raw.githubusercontent.com/sumanjabin2020/tink-her-hack-temp/main/github_pages_site/assets/stealth_cat.png)
+*Stealth Mode: Making safety look like a turned-off screen.*
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
-
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+![Screenshot3](https://raw.githubusercontent.com/sumanjabin2020/tink-her-hack-temp/main/github_pages_site/assets/siren_dog.png)
+*Angry Dog Alert settings for the ultimate deterrent.*
 
 #### Diagrams
 
 **System Architecture:**
-
-![Architecture Diagram](docs/architecture.png)
-*Explain your system architecture - components, data flow, tech stack interaction*
-
-**Application Workflow:**
-
-![Workflow](docs/workflow.png)
-*Add caption explaining your workflow*
-
----
-
-### For Hardware:
-
-#### Schematic & Circuit
-
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-#### Build Photos
-
-![Team](Add photo of your team here)
-
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
-
----
-
-## Additional Documentation
-
-### For Web Projects with Backend:
-
-#### API Documentation
-
-**Base URL:** `https://api.yourproject.com`
-
-##### Endpoints
-
-**GET /api/endpoint**
-- **Description:** [What it does]
-- **Parameters:**
-  - `param1` (string): [Description]
-  - `param2` (integer): [Description]
-- **Response:**
-```json
-{
-  "status": "success",
-  "data": {}
-}
-```
-
-**POST /api/endpoint**
-- **Description:** [What it does]
-- **Request Body:**
-```json
-{
-  "field1": "value1",
-  "field2": "value2"
-}
-```
-- **Response:**
-```json
-{
-  "status": "success",
-  "message": "Operation completed"
-}
-```
-
-[Add more endpoints as needed...]
-
----
-
-### For Mobile Apps:
-
-#### App Flow Diagram
-
-![App Flow](docs/app-flow.png)
-*Explain the user flow through your application*
-
-#### Installation Guide
-
-**For Android (APK):**
-1. Download the APK from [Release Link]
-2. Enable "Install from Unknown Sources" in your device settings:
-   - Go to Settings > Security
-   - Enable "Unknown Sources"
-3. Open the downloaded APK file
-4. Follow the installation prompts
-5. Open the app and enjoy!
-
-**For iOS (IPA) - TestFlight:**
-1. Download TestFlight from the App Store
-2. Open this TestFlight link: [Your TestFlight Link]
-3. Click "Install" or "Accept"
-4. Wait for the app to install
-5. Open the app from your home screen
-
-**Building from Source:**
-```bash
-# For Android
-flutter build apk
-# or
-./gradlew assembleDebug
-
-# For iOS
-flutter build ios
-# or
-xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug
-```
-
----
-
-### For Hardware Projects:
-
-#### Bill of Materials (BOM)
-
-| Component | Quantity | Specifications | Price | Link/Source |
-|-----------|----------|----------------|-------|-------------|
-| Arduino Uno | 1 | ATmega328P, 16MHz | ₹450 | [Link] |
-| LED | 5 | Red, 5mm, 20mA | ₹5 each | [Link] |
-| Resistor | 5 | 220Ω, 1/4W | ₹1 each | [Link] |
-| Breadboard | 1 | 830 points | ₹100 | [Link] |
-| Jumper Wires | 20 | Male-to-Male | ₹50 | [Link] |
-| [Add more...] | | | | |
-
-**Total Estimated Cost:** ₹[Amount]
-
-#### Assembly Instructions
-
-**Step 1: Prepare Components**
-1. Gather all components listed in the BOM
-2. Check component specifications
-3. Prepare your workspace
-![Step 1](images/assembly-step1.jpg)
-*Caption: All components laid out*
-
-**Step 2: Build the Power Supply**
-1. Connect the power rails on the breadboard
-2. Connect Arduino 5V to breadboard positive rail
-3. Connect Arduino GND to breadboard negative rail
-![Step 2](images/assembly-step2.jpg)
-*Caption: Power connections completed*
-
-**Step 3: Add Components**
-1. Place LEDs on breadboard
-2. Connect resistors in series with LEDs
-3. Connect LED cathodes to GND
-4. Connect LED anodes to Arduino digital pins (2-6)
-![Step 3](images/assembly-step3.jpg)
-*Caption: LED circuit assembled*
-
-**Step 4: [Continue for all steps...]**
-
-**Final Assembly:**
-![Final Build](images/final-build.jpg)
-*Caption: Completed project ready for testing*
-
----
-
-### For Scripts/CLI Tools:
-
-#### Command Reference
-
-**Basic Usage:**
-```bash
-python script.py [options] [arguments]
-```
-
-**Available Commands:**
-- `command1 [args]` - Description of what command1 does
-- `command2 [args]` - Description of what command2 does
-- `command3 [args]` - Description of what command3 does
-
-**Options:**
-- `-h, --help` - Show help message and exit
-- `-v, --verbose` - Enable verbose output
-- `-o, --output FILE` - Specify output file path
-- `-c, --config FILE` - Specify configuration file
-- `--version` - Show version information
-
-**Examples:**
-
-```bash
-# Example 1: Basic usage
-python script.py input.txt
-
-# Example 2: With verbose output
-python script.py -v input.txt
-
-# Example 3: Specify output file
-python script.py -o output.txt input.txt
-
-# Example 4: Using configuration
-python script.py -c config.json --verbose input.txt
-```
-
-#### Demo Output
-
-**Example 1: Basic Processing**
-
-**Input:**
-```
-This is a sample input file
-with multiple lines of text
-for demonstration purposes
-```
-
-**Command:**
-```bash
-python script.py sample.txt
-```
-
-**Output:**
-```
-Processing: sample.txt
-Lines processed: 3
-Characters counted: 86
-Status: Success
-Output saved to: output.txt
-```
-
-**Example 2: Advanced Usage**
-
-**Input:**
-```json
-{
-  "name": "test",
-  "value": 123
-}
-```
-
-**Command:**
-```bash
-python script.py -v --format json data.json
-```
-
-**Output:**
-```
-[VERBOSE] Loading configuration...
-[VERBOSE] Parsing JSON input...
-[VERBOSE] Processing data...
-{
-  "status": "success",
-  "processed": true,
-  "result": {
-    "name": "test",
-    "value": 123,
-    "timestamp": "2024-02-07T10:30:00"
-  }
-}
-[VERBOSE] Operation completed in 0.23s
-```
+The app runs a high-priority `EmergencyTriggerService` in the foreground. It listens for hardware interrupts (screen toggles) and audio buffers (speech recognition) simultaneously. When a trigger is matched, it queries the `FusedLocationProvider` for the best available coordinates before firing an `SmsManager` intent.
 
 ---
 
@@ -363,58 +95,38 @@ python script.py -v --format json data.json
 ### Video
 [Add your demo video link here - YouTube, Google Drive, etc.]
 
-*Explain what the video demonstrates - key features, user flow, technical highlights*
-
-### Additional Demos
-[Add any extra demo materials/links - Live site, APK download, online demo, etc.]
+*Demonstrates the 5-tap power trigger, the voice command detection, and the realistic fake call flow.*
 
 ---
 
-## AI Tools Used (Optional - For Transparency Bonus)
+## AI Tools Used
 
-If you used AI tools during development, document them here for transparency:
+**Tool Used:** Antigravity AI (Google DeepMind)
 
-**Tool Used:** [e.g., GitHub Copilot, v0.dev, Cursor, ChatGPT, Claude]
-
-**Purpose:** [What you used it for]
-- Example: "Generated boilerplate React components"
-- Example: "Debugging assistance for async functions"
-- Example: "Code review and optimization suggestions"
+**Purpose:** 
+- Architecture design and planning of the background services.
+- Implementation of the `SpeechRecognizer` logic and Location fallbacks.
+- Creation of the high-fidelity GitHub Pages website.
+- Generation of the goofy 3D cat assets.
 
 **Key Prompts Used:**
-- "Create a REST API endpoint for user authentication"
-- "Debug this async function that's causing race conditions"
-- "Optimize this database query for better performance"
-
-**Percentage of AI-generated code:** [Approximately X%]
-
-**Human Contributions:**
-- Architecture design and planning
-- Custom business logic implementation
-- Integration and testing
-- UI/UX design decisions
-
-*Note: Proper documentation of AI usage demonstrates transparency and earns bonus points in evaluation!*
+- "Implement a background service that listens for 5 power button clicks."
+- "Create a glassmorphism website for an Android app with goofy cats."
+- "Mute the system and music streams while SpeechRecognizer restarts to avoid the beep sound."
 
 ---
 
 ## Team Contributions
 
-- [Name 1]: [Specific contributions - e.g., Frontend development, API integration, etc.]
-- [Name 2]: [Specific contributions - e.g., Backend development, Database design, etc.]
-- [Name 3]: [Specific contributions - e.g., UI/UX design, Testing, Documentation, etc.]
+- **Suman Jabin**: Project Vision, UI/UX Design, Testing on hardware, and Integration.
+- **Antigravity AI**: Core logic implementation, Bug fixing, and Documentation.
 
 ---
 
 ## License
 
-This project is licensed under the [LICENSE_NAME] License - see the [LICENSE](LICENSE) file for details.
-
-**Common License Options:**
-- MIT License (Permissive, widely used)
-- Apache 2.0 (Permissive with patent grant)
-- GPL v3 (Copyleft, requires derivative works to be open source)
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-Made with ❤️ at TinkerHub
+Made with ❤️ and too many meows at TinkerHub! 🐾
